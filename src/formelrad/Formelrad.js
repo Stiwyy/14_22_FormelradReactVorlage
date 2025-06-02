@@ -8,41 +8,50 @@ export default function Formelrad() {
         u: 10,
         i: 2,
         r: "",
-        p: ""
+        p: "",
+        message: ""
     });
 
     const handleClear = (event) => {
         event.preventDefault();
         console.log("handleClear");
-        setValues({
-            u: "",
-            i: "",
-            r: "",
-            p: ""
-        });
+        setValues(values => ({ ...values, u: "", i: "", r: "", p: "", message: "" }));
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log("handleSubmit");
-        if (values.u === "" && values.i === "") {
-            setValues(values => ({ ...values, u: Math.sqrt(values.p * values.r) }));
-            setValues(values => ({ ...values, i: Math.sqrt(values.p / values.r) }));
-        } else if (values.u === "" && values.r === "") {
-            setValues(values => ({ ...values, u: values.p / values.i }));
-            setValues(values => ({ ...values, r: values.p / values.i / values.i }));
-        } else if (values.u === "" && values.p === "") {
-            setValues(values => ({ ...values, u: values.i * values.r }));
-            setValues(values => ({ ...values, p: values.i * values.i * values.r }));
-        } else if (values.i === "" && values.r === "") {
-            setValues(values => ({ ...values, i: values.p / values.u }));
-            setValues(values => ({ ...values, r: values.u * values.u / values.p }));
-        } else if (values.i === "" && values.p === "") {
-            setValues(values => ({ ...values, i: values.u / values.r }));
-            setValues(values => ({ ...values, p: values.u * values.u / values.r }));
+
+        let count = 0;
+        if (values.u === "") count++;
+        if (values.i === "") count++;
+        if (values.r === "") count++;
+        if (values.p === "") count++;
+
+        if (count !== 2) {
+            setValues(values => ({ ...values, message: "2 Felder leer lassen, 2 Felder ausfüllen" }));
         } else {
-            setValues(values => ({ ...values, r: values.u / values.i }));
-            setValues(values => ({ ...values, p: values.u * values.i }));
+            setValues(values => ({ ...values, message: "" }));
+
+            if (values.u === "" && values.i === "") {
+                setValues(values => ({ ...values, u: Math.sqrt(values.p * values.r) }));
+                setValues(values => ({ ...values, i: Math.sqrt(values.p / values.r) }));
+            } else if (values.u === "" && values.r === "") {
+                setValues(values => ({ ...values, u: values.p / values.i }));
+                setValues(values => ({ ...values, r: values.p / values.i / values.i }));
+            } else if (values.u === "" && values.p === "") {
+                setValues(values => ({ ...values, u: values.i * values.r }));
+                setValues(values => ({ ...values, p: values.i * values.i * values.r }));
+            } else if (values.i === "" && values.r === "") {
+                setValues(values => ({ ...values, i: values.p / values.u }));
+                setValues(values => ({ ...values, r: values.u * values.u / values.p }));
+            } else if (values.i === "" && values.p === "") {
+                setValues(values => ({ ...values, i: values.u / values.r }));
+                setValues(values => ({ ...values, p: values.u * values.u / values.r }));
+            } else {
+                setValues(values => ({ ...values, r: values.u / values.i }));
+                setValues(values => ({ ...values, p: values.u * values.i }));
+            }
         }
     };
 
@@ -54,12 +63,13 @@ export default function Formelrad() {
                     <img src={formelrad} width="200" alt="Formelrad" />
                 </header>
                 <form onSubmit={handleSubmit}>
-                    <InputField color={"black"} value={values.u} label="Spannung" handleChange={e => { setValues(values => ({ ...values, u: e.target.value })) }} />
-                    <InputField color={"black"} value={values.i} label="Stromstärke" handleChange={e => { setValues(values => ({ ...values, i: e.target.value })) }} />
-                    <InputField color={"black"} value={values.r} label="Widerstand" handleChange={e => { setValues(values => ({ ...values, r: e.target.value })) }} />
-                    <InputField color={"black"} value={values.p} label="Leistung" handleChange={e => { setValues(values => ({ ...values, p: e.target.value })) }} />
+                    <InputField color={"black"} value={values.u} label="Spannung" handleChange={e => setValues(values => ({ ...values, u: e.target.value }))} />
+                    <InputField color={"black"} value={values.i} label="Stromstärke" handleChange={e => setValues(values => ({ ...values, i: e.target.value }))} />
+                    <InputField color={"black"} value={values.r} label="Widerstand" handleChange={e => setValues(values => ({ ...values, r: e.target.value }))} />
+                    <InputField color={"black"} value={values.p} label="Leistung" handleChange={e => setValues(values => ({ ...values, p: e.target.value }))} />
                     <button type="submit">Calculate</button>
                     <button style={{ margin: 10 }} onClick={handleClear}>Clear</button>
+                    {values.message && <p style={{ color: "red" }}>{values.message}</p>}
                 </form>
             </section>
         </>
